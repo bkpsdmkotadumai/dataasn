@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Kepegawaian Kota Dumai</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f4f7f6; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        header { 
+            background-color: #0056b3; 
+            color: white; 
+            padding: 25px; 
+            text-align: center; 
+            border-radius: 8px 8px 0 0; 
+        }
+        h1 { margin: 0; font-size: 26px; }
+        p { margin: 8px 0 0; font-size: 16px; opacity: 0.9; }
+        
+        .container { 
+            max-width: 1100px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
+        
+        .content { padding: 30px; }
+        
+        input[type="text"] { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 20px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-size: 16px;
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+        th, td { 
+            padding: 14px; 
+            text-align: left; 
+            border-bottom: 1px solid #ddd; 
+        }
+        th { 
+            background-color: #f8f9fa; 
+            color: #333; 
+            font-weight: 600; 
+        }
+        tr:hover { background-color: #f1f5f9; }
+        
+        .badge {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            background-color: #28a745;
+        }
+
+        .footer { 
+            text-align: center; 
+            padding: 20px; 
+            font-size: 14px; 
+            color: #666; 
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Portal Informasi Kepegawaian</h1>
+            <p>Pemerintah Kota Dumai</p>
+        </header>
+
+        <div class="content">
+            <h3>Daftar Pegawai Aktif</h3>
+            <p style="margin-bottom: 20px; color: #666; font-size: 14px;">Ketik nama, NIP, atau instansi untuk mencari data pegawai.</p>
+            
+            <!-- Kolom Pencarian -->
+            <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Cari pegawai di sini...">
+
+            <!-- Tabel Data Pegawai -->
+            <table id="employeeTable">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Lengkap</th>
+                        <th>Gelar</th>
+                        <th>NIP</th>
+                        <th>Jabatan</th>
+                        <th>Instansi / Unit Kerja</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Budi Santoso</td>
+                        <td>S.Kom., M.Si.</td>
+                        <td>198001012005011001</td>
+                        <td>Kepala Bidang E-Government</td>
+                        <td>Diskominfo Kota Dumai</td>
+                        <td><span class="badge">Aktif</span></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Siti Aminah</td>
+                        <td>S.STP., M.Si.</td>
+                        <td>198502022010012002</td>
+                        <td>Camat Dumai Kota</td>
+                        <td>Kecamatan Dumai Kota</td>
+                        <td><span class="badge">Aktif</span></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Ahmad Fauzi</td>
+                        <td>S.Pd.</td>
+                        <td>199003032015021003</td>
+                        <td>Guru Ahli Madya</td>
+                        <td>Dinas Pendidikan Kota Dumai</td>
+                        <td><span class="badge">Aktif</span></td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Dr. Rina Puspita</td>
+                        <td>Sp.A</td>
+                        <td>197804042008012004</td>
+                        <td>Dokter Spesialis Anak</td>
+                        <td>RSUD Kota Dumai</td>
+                        <td><span class="badge">Aktif</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            &copy; 2026 Pemerintah Kota Dumai - Sistem Informasi Internal
+        </div>
+    </div>
+
+    <!-- Script untuk fitur pencarian -->
+    <script>
+        function searchTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("employeeTable");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 1; i < tr.length; i++) {
+                tr[i].style.display = "none"; 
+                let tds = tr[i].getElementsByTagName("td");
+                for (let j = 0; j < tds.length; j++) {
+                    if (tds[j]) {
+                        txtValue = tds[j].textContent || tds[j].innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            break; 
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
