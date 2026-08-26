@@ -3,174 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Informasi Kepegawaian Kota Dumai</title>
+    <title>Dashboard Kepegawaian Kota Dumai</title>
+    <!-- Memanggil Chart.js untuk Grafik -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #f4f7f6; 
-            margin: 0; 
-            padding: 20px; 
-        }
-        header { 
-            background-color: #0056b3; 
-            color: white; 
-            padding: 25px; 
-            text-align: center; 
-            border-radius: 8px 8px 0 0; 
-        }
-        h1 { margin: 0; font-size: 26px; }
-        p { margin: 8px 0 0; font-size: 16px; opacity: 0.9; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; }
+        .header { background-color: #ffffff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #28a745; }
+        .header h1 { margin: 0; color: #28a745; font-size: 24px; }
+        .header .total-asn { text-align: right; }
+        .header .total-asn h2 { margin: 0; color: #dc3545; font-size: 28px; }
+        .nav { background-color: #28a745; padding: 10px 30px; color: white; display: flex; gap: 20px; font-weight: bold; font-size: 14px; }
+        .container { padding: 20px 30px; }
         
-        .container { 
-            max-width: 1100px; 
-            margin: 0 auto; 
-            background: white; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
-        }
-        
-        .content { padding: 30px; }
-        
-        input[type="text"] { 
-            width: 100%; 
-            padding: 12px; 
-            margin-bottom: 20px; 
-            border: 1px solid #ccc; 
-            border-radius: 4px; 
-            box-sizing: border-box; 
-            font-size: 16px;
-        }
-        
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-        }
-        th, td { 
-            padding: 14px; 
-            text-align: left; 
-            border-bottom: 1px solid #ddd; 
-        }
-        th { 
-            background-color: #f8f9fa; 
-            color: #333; 
-            font-weight: 600; 
-        }
-        tr:hover { background-color: #f1f5f9; }
-        
-        .badge {
-            padding: 5px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-            color: white;
-            background-color: #28a745;
-        }
+        /* Kartu Ringkasan */
+        .summary-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .card { padding: 20px; border-radius: 8px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card h3 { margin: 0; font-size: 16px; font-weight: normal; }
+        .card h2 { margin: 10px 0 0; font-size: 32px; }
+        .bg-blue { background-color: #4285f4; }
+        .bg-yellow { background-color: #fbbc05; }
+        .bg-green { background-color: #34a853; }
+        .bg-red { background-color: #ea4335; }
 
-        .footer { 
-            text-align: center; 
-            padding: 20px; 
-            font-size: 14px; 
-            color: #666; 
-            border-top: 1px solid #eee;
-        }
+        /* Grafik */
+        .charts-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .chart-box { background-color: #1e1e1e; padding: 20px; border-radius: 8px; color: white; text-align: center; }
+        .chart-box h4 { margin-top: 0; color: #ffffff; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Portal Informasi Kepegawaian</h1>
-            <p>Pemerintah Kota Dumai</p>
-        </header>
 
-        <div class="content">
-            <h3>Daftar Pegawai Aktif</h3>
-            <p style="margin-bottom: 20px; color: #666; font-size: 14px;">Ketik nama, NIP, atau instansi untuk mencari data pegawai.</p>
-            
-            <!-- Kolom Pencarian -->
-            <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Cari pegawai di sini...">
-
-            <!-- Tabel Data Pegawai -->
-            <table id="employeeTable">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Lengkap</th>
-                        <th>Gelar</th>
-                        <th>NIP</th>
-                        <th>Jabatan</th>
-                        <th>Instansi / Unit Kerja</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Budi Santoso</td>
-                        <td>S.Kom., M.Si.</td>
-                        <td>198001012005011001</td>
-                        <td>Kepala Bidang E-Government</td>
-                        <td>Diskominfo Kota Dumai</td>
-                        <td><span class="badge">Aktif</span></td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Siti Aminah</td>
-                        <td>S.STP., M.Si.</td>
-                        <td>198502022010012002</td>
-                        <td>Camat Dumai Kota</td>
-                        <td>Kecamatan Dumai Kota</td>
-                        <td><span class="badge">Aktif</span></td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Ahmad Fauzi</td>
-                        <td>S.Pd.</td>
-                        <td>199003032015021003</td>
-                        <td>Guru Ahli Madya</td>
-                        <td>Dinas Pendidikan Kota Dumai</td>
-                        <td><span class="badge">Aktif</span></td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Dr. Rina Puspita</td>
-                        <td>Sp.A</td>
-                        <td>197804042008012004</td>
-                        <td>Dokter Spesialis Anak</td>
-                        <td>RSUD Kota Dumai</td>
-                        <td><span class="badge">Aktif</span></td>
-                    </tr>
-                </tbody>
-            </table>
+    <div class="header">
+        <div>
+            <h1>DASHBOARD KEPEGAWAIAN</h1>
+            <span style="color: #666; font-weight: bold;">PEMERINTAH KOTA DUMAI</span>
         </div>
-
-        <div class="footer">
-            &copy; 2026 Pemerintah Kota Dumai - Sistem Informasi Internal
+        <div class="total-asn">
+            <span style="color: #666; font-size: 14px; font-weight: bold;">Total Pegawai Tahun 2026</span>
+            <h2>4.520</h2>
         </div>
     </div>
 
-    <!-- Script untuk fitur pencarian -->
-    <script>
-        function searchTable() {
-            var input, filter, table, tr, td, i, txtValue;
-            input = document.getElementById("searchInput");
-            filter = input.value.toUpperCase();
-            table = document.getElementById("employeeTable");
-            tr = table.getElementsByTagName("tr");
+    <div class="nav">
+        <span>🏠 Dashboard</span>
+        <span>📊 Berdasarkan Pangkat</span>
+        <span>📈 Berdasarkan Pendidikan</span>
+    </div>
 
-            for (i = 1; i < tr.length; i++) {
-                tr[i].style.display = "none"; 
-                let tds = tr[i].getElementsByTagName("td");
-                for (let j = 0; j < tds.length; j++) {
-                    if (tds[j]) {
-                        txtValue = tds[j].textContent || tds[j].innerText;
-                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                            tr[i].style.display = "";
-                            break; 
-                        }
-                    }
-                }
-            }
-        }
+    <div class="container">
+        <!-- Kartu Ringkasan -->
+        <div class="summary-cards">
+            <div class="card bg-blue">
+                <div><h3>Total PNS</h3><h2>3.150</h2></div>
+            </div>
+            <div class="card bg-yellow">
+                <div><h3>Total CPNS</h3><h2>120</h2></div>
+            </div>
+            <div class="card bg-green">
+                <div><h3>Total PPPK</h3><h2>1.250</h2></div>
+            </div>
+            <div class="card bg-red">
+                <div><h3>Total Honorer</h3><h2>0</h2></div>
+            </div>
+        </div>
+
+        <!-- Area Grafik -->
+        <div class="charts-container">
+            <div class="chart-box">
+                <h4>Data ASN Berdasarkan Jenis Kelamin</h4>
+                <canvas id="genderChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h4>Data Berdasarkan Jenis Jabatan</h4>
+                <canvas id="jabatanChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Grafik Jenis Kelamin (Donut Chart)
+        const ctxGender = document.getElementById('genderChart').getContext('2d');
+        new Chart(ctxGender, {
+            type: 'doughnut',
+            data: {
+                labels: ['Laki-laki', 'Perempuan'],
+                datasets: [{
+                    data: [2100, 2420],
+                    backgroundColor: ['#28a745', '#ff8c00'],
+                    borderWidth: 0
+                }]
+            },
+            options: { plugins: { legend: { labels: { color: 'white' } } } }
+        });
+
+        // Grafik Jenis Jabatan (Bar Chart)
+        const ctxJabatan = document.getElementById('jabatanChart').getContext('2d');
+        new Chart(ctxJabatan, {
+            type: 'bar',
+            data: {
+                labels: ['Struktural', 'Pelaksana', 'Fungsional'],
+                datasets: [{
+                    label: 'Jumlah Pegawai',
+                    data: [350, 1500, 2670],
+                    backgroundColor: '#fbbc05'
+                }]
+            },
+            options: { scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }, plugins: { legend: { display: false } } }
+        });
     </script>
 </body>
 </html>
