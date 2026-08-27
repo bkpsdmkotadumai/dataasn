@@ -1,109 +1,192 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Dashboard Kepegawaian Kota Dumai</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; }
-        .header { background-color: #ffffff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #0056b3; }
-        .header h1 { margin: 0; color: #0056b3; font-size: 24px; }
-        .header .total-asn { text-align: right; }
-        .header .total-asn h2 { margin: 0; color: #dc3545; font-size: 28px; }
-        .nav { background-color: #0056b3; padding: 10px 30px; color: white; display: flex; gap: 20px; font-weight: bold; font-size: 14px; }
-        .container { padding: 20px 30px; }
-        
-        .summary-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
-        .card { padding: 20px; border-radius: 8px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .card h3 { margin: 0; font-size: 16px; font-weight: normal; }
-        .card h2 { margin: 10px 0 0; font-size: 32px; }
-        .bg-blue { background-color: #4285f4; }
-        .bg-yellow { background-color: #fbbc05; }
-        .bg-green { background-color: #34a853; }
-        .bg-red { background-color: #ea4335; }
-
-        .charts-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .chart-box { background-color: #1e1e1e; padding: 20px; border-radius: 8px; color: white; text-align: center; }
-        .chart-box h4 { margin-top: 0; color: #ffffff; margin-bottom: 15px; }
-        
-        /* INI KODE TAMBAHAN UNTUK MENGUNCI UKURAN GRAFIK */
-        .chart-wrapper {
-            position: relative;
-            height: 300px; /* Tinggi maksimal grafik dikunci disini */
-            width: 100%;
-        }
-    </style>
+    <meta name="description" content="Dashboard Kepegawaian Kota Dumai">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap & Material Design (Mengambil langsung dari server aslinya agar desain tidak hancur) -->
+    <link href="https://simpeg.sumbarprov.go.id/idashboard/assets/css/themes/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="https://simpeg.sumbarprov.go.id/idashboard/assets/css/themes/mdb.css" rel="stylesheet" type="text/css" />
+    <link href="https://simpeg.sumbarprov.go.id/idashboard/assets/css/themes/style.css" rel="stylesheet" type="text/css" />
+    <link href="https://simpeg.sumbarprov.go.id/idashboard/assets/css/plugins/nprogress/nprogress.css" rel="stylesheet" type="text/css" />
 </head>
-<body>
+<body class="white-skin">
 
-    <div class="header">
-        <div>
-            <h1>DASHBOARD KEPEGAWAIAN</h1>
-            <span style="color: #666; font-weight: bold;">PEMERINTAH KOTA DUMAI</span>
-        </div>
-        <div class="total-asn">
-            <span style="color: #666; font-size: 14px; font-weight: bold;">Total Pegawai Tahun 2026</span>
-            <h2 id="teks_total_semua">Loading...</h2>
-        </div>
-    </div>
+    <header>
+        <!-- Navbar Atas -->
+        <nav class="navbar navbar-title">
+            <div class="navbar-left">
+                <a class="navbar-brand" href="#">
+                    <!-- Menggunakan Icon Teks karena logo Sumbar kita hilangkan -->
+                    <h3 class="font-weight-bold" style="color:#0056b3; margin-top:10px;">
+                        <i class="fas fa-building"></i> BKPSDM KOTA DUMAI
+                    </h3>
+                </a>
+            </div>
+            <div class="navbar-right">
+                <p class="text-header-amount font-weight-bold">Total Pegawai Tahun 2026</p>
+                <h2 class="text-amount total-asn" id="header_total">Loading...</h2>
+            </div>
+        </nav>
 
-    <div class="nav">
-        <span>🏠 Dashboard</span>
-        <span>📊 Data Pegawai</span>
-        <span>📈 Proyeksi Pensiun</span>
-    </div>
+        <!-- Navbar Menu Hijau -->
+        <nav class="navbar navbar-expand-lg navbar-dark green">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="basicExampleNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#"><span><i class="fas fa-home"></i> Dashboard</span></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
 
-    <div class="container">
-        <!-- Kartu Ringkasan -->
-        <div class="summary-cards">
-            <div class="card bg-blue">
-                <div><h3>Total PNS</h3><h2 id="teks_pns">-</h2></div>
-            </div>
-            <div class="card bg-yellow">
-                <div><h3>Total PPPK</h3><h2 id="teks_pppk">-</h2></div>
-            </div>
-            <div class="card bg-green">
-                <div><h3>PPPK Paruh Waktu</h3><h2 id="teks_pppk_pw">-</h2></div>
-            </div>
-            <div class="card bg-red">
-                <div><h3>Pensiun 2026</h3><h2 id="teks_pensiun26">-</h2></div>
-            </div>
-        </div>
-
-        <!-- Area Grafik dengan Wrapper Baru -->
-        <div class="charts-container">
-            <div class="chart-box">
-                <h4>Berdasarkan Jenis Kelamin</h4>
-                <div class="chart-wrapper">
-                    <canvas id="genderChart"></canvas>
+    <main class="pt-4 pb-1 mx-lg-0">
+        <div class="container-fluid">
+            <!-- 4 KARTU ATAS -->
+            <section class="mb-3 mt-n4">
+                <div class="row">
+                    <!-- Card PNS -->
+                    <div class="col-xl-3 col-md-6 col-12 mt-3">
+                        <div class="card card-cascade cascading-admin-card primary-color">
+                            <div class="admin-up">
+                                <i class="fas fa-users primary-color mr-3 z-depth-2"></i>
+                                <div class="data">
+                                    <h5 class="font-weight-500 text-white">Total PNS</h5>
+                                    <h1 class="font-weight-bold text-white" id="card_pns">-</h1>
+                                </div>
+                            </div>
+                            <div class="card-body card-body-cascade">
+                                <div class="progress mb-2"><div class="progress-bar white" style="width: 100%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card CPNS -->
+                    <div class="col-xl-3 col-md-6 col-12 mt-3">
+                        <div class="card card-cascade cascading-admin-card warning-color">
+                            <div class="admin-up">
+                                <i class="fas fa-user warning-color lighten-1 mr-3 z-depth-2"></i>
+                                <div class="data">
+                                    <h5 class="font-weight-500 text-white">Total CPNS</h5>
+                                    <h1 class="font-weight-bold text-white" id="card_cpns">0</h1>
+                                </div>
+                            </div>
+                            <div class="card-body card-body-cascade">
+                                <div class="progress mb-2"><div class="progress-bar white accent-2" style="width: 100%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card PPPK -->
+                    <div class="col-xl-3 col-md-6 col-12 mt-3">
+                        <div class="card card-cascade cascading-admin-card green">
+                            <div class="admin-up">
+                                <i class="fas fa-user-tie green mr-3 z-depth-2"></i>
+                                <div class="data">
+                                    <h5 class="font-weight-500 text-white">Total PPPK</h5>
+                                    <h1 class="font-weight-bold text-white" id="card_pppk">-</h1>
+                                </div>
+                            </div>
+                            <div class="card-body card-body-cascade">
+                                <div class="progress mb-2"><div class="progress-bar white accent-2" style="width: 100%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card PPPK PW -->
+                    <div class="col-xl-3 col-md-6 col-12 mt-3">
+                        <div class="card card-cascade cascading-admin-card danger-color">
+                            <div class="admin-up">
+                                <i class="fas fa-user-secret danger-color accent-2 mr-3 z-depth-2"></i>
+                                <div class="data">
+                                    <h5 class="font-weight-500 text-white">Total PPPK PW</h5>
+                                    <h1 class="font-weight-bold text-white" id="card_pppkw">-</h1>
+                                </div>
+                            </div>
+                            <div class="card-body card-body-cascade">
+                                <div class="progress mb-2"><div class="progress-bar white accent-2" style="width: 100%"></div></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="chart-box">
-                <h4>Berdasarkan Jenis Jabatan</h4>
-                <div class="chart-wrapper">
-                    <canvas id="jabatanChart"></canvas>
-                </div>
-            </div>
-            <div class="chart-box">
-                <h4>Proyeksi Pensiun (3 Tahun)</h4>
-                <div class="chart-wrapper">
-                    <canvas id="pensiunChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
+            </section>
 
+            <!-- GRAFIK HIGHCHARTS -->
+            <section class="mb-3">
+                <div class="row mt-n3">
+                    <div class="col-12 col-sm-6 col-md-4 mt-3">
+                        <div class="card"><div class="card-body"><div id="chart-gender"></div></div></div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 mt-3">
+                        <div class="card px-0 py-0"><div class="card-body"><div id="chart-asn"></div></div></div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 mt-3">
+                        <div class="card px-0 py-0"><div class="card-body"><div id="chart-jabatan"></div></div></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TABEL PENSIUN -->
+            <section class="pb-5 mb-4">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card px-0 py-0">
+                            <div class="card-body">
+                                <h5 class="font-weight-bold text-center">Data Proyeksi Pensiun Kota Dumai</h5>
+                                <p class="text-center mt-n2">Berdasarkan Tahun Pensiun (3 Tahun Kedepan)</p>
+                                <div class="table-responsive-md">
+                                    <table class="table table-striped table-bordered table-hover text-center">
+                                        <thead class="green lighten-1 text-white">
+                                            <tr>
+                                                <th>Tahun Pensiun</th>
+                                                <th>Estimasi Jumlah Pensiun</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr><td class="font-weight-bold">Tahun 2026</td><td id="tbl_pen26">-</td></tr>
+                                            <tr><td class="font-weight-bold">Tahun 2027</td><td id="tbl_pen27">-</td></tr>
+                                            <tr><td class="font-weight-bold">Tahun 2028</td><td id="tbl_pen28">-</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="page-footer font-small green darken-3">
+        <div class="footer-copyright text-center py-3">
+            &copy; 2026 Copyright : BKD Kota Dumai - DASHBOARD KEPEGAWAIAN
+        </div>
+    </footer>
+
+    <!-- Scripts dari Server Asli -->
+    <script type="text/javascript" src="https://simpeg.sumbarprov.go.id/idashboard/assets/js/themes/jquery.min.js"></script>
+    <script type="text/javascript" src="https://simpeg.sumbarprov.go.id/idashboard/assets/js/themes/bootstrap.min.js"></script>
+    <!-- Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+
+    <!-- SCRIPT TARIK DATA GOOGLE SHEETS -->
     <script>
-        // ---> MASUKKAN LINK CSV GOOGLE SHEETS "TOTAL" ANDA DI BAWAH INI <---
-        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnK65dhlKpvR5Lx7k8B5-jwfg-d2b97qM-8t7J0hPvEXUma2Y1Cn5VhGH8nykpKswD4pSEIh1Wb4Qf/pub?gid=0&single=true&output=csv'; 
+        // ===> MASUKKAN LINK CSV GOOGLE SHEETS ANDA DI BAWAH INI <===
+        const sheetUrl = 'LINK_CSV_ANDA_DI_SINI'; 
 
-        async function ambilData() {
+        async function initDashboard() {
             try {
                 const response = await fetch(sheetUrl);
                 if (!response.ok) throw new Error("Akses ditolak");
-                
                 const dataText = await response.text();
+                
                 const rows = dataText.split('\n');
                 let db = {};
                 let pen26 = 0, pen27 = 0, pen28 = 0;
@@ -112,20 +195,15 @@
                 let idx26 = headers.findIndex(x => x.includes('2026'));
                 let idx27 = headers.findIndex(x => x.includes('2027'));
                 let idx28 = headers.findIndex(x => x.includes('2028'));
-                
-                if(idx26 === -1) idx26 = 7; 
-                if(idx27 === -1) idx27 = 8;
-                if(idx28 === -1) idx28 = 9;
+                if(idx26 === -1) idx26 = 7; if(idx27 === -1) idx27 = 8; if(idx28 === -1) idx28 = 9;
 
                 for(let i = 1; i < rows.length; i++) {
                     const cols = rows[i].split(',');
-                    
                     if(cols[0]) {
                         let key = cols[0].trim().toLowerCase();
                         let val = (parseInt(cols[1]) || 0) + (parseInt(cols[2]) || 0) + (parseInt(cols[3]) || 0);
                         db[key] = val;
                     }
-
                     if(cols[5]) {
                         let textF = cols[5].trim().toLowerCase();
                         if(textF === 'pns' || textF === 'pppk' || textF === 'pppk paruh waktu') {
@@ -136,40 +214,78 @@
                     }
                 }
 
-                document.getElementById('teks_pns').innerText = (db['total_pns'] || 0).toLocaleString('id-ID');
-                document.getElementById('teks_pppk').innerText = (db['total_pppk'] || 0).toLocaleString('id-ID');
-                document.getElementById('teks_pppk_pw').innerText = (db['total_pppk_paruh_waktu'] || 0).toLocaleString('id-ID');
-                document.getElementById('teks_pensiun26').innerText = pen26.toLocaleString('id-ID');
+                // 1. UPDATE KARTU ANGKA
+                let pns = db['total_pns'] || 0;
+                let pppk = db['total_pppk'] || 0;
+                let pppkw = db['total_pppk_paruh_waktu'] || 0;
+                let cpns = db['total_cpns'] || 0;
+                let totalASN = pns + pppk + pppkw + cpns;
+
+                document.getElementById('header_total').innerText = totalASN.toLocaleString('id-ID');
+                document.getElementById('card_pns').innerText = pns.toLocaleString('id-ID');
+                document.getElementById('card_pppk').innerText = pppk.toLocaleString('id-ID');
+                document.getElementById('card_pppkw').innerText = pppkw.toLocaleString('id-ID');
                 
-                let totalSemua = (db['total_pns'] || 0) + (db['total_pppk'] || 0) + (db['total_pppk_paruh_waktu'] || 0);
-                document.getElementById('teks_total_semua').innerText = totalSemua.toLocaleString('id-ID');
+                document.getElementById('tbl_pen26').innerText = pen26 + " Pegawai";
+                document.getElementById('tbl_pen27').innerText = pen27 + " Pegawai";
+                document.getElementById('tbl_pen28').innerText = pen28 + " Pegawai";
 
-                // KODE TAMBAHAN: maintainAspectRatio: false agar grafik tidak membesar sendiri
-                new Chart(document.getElementById('genderChart').getContext('2d'), {
-                    type: 'doughnut',
-                    data: { labels: ['Laki-laki', 'Perempuan'], datasets: [{ data: [db['gender_l'] || 0, db['gender_p'] || 0], backgroundColor: ['#28a745', '#ff8c00'], borderWidth: 0 }] },
-                    options: { maintainAspectRatio: false, plugins: { legend: { labels: { color: 'white' } } } }
+                // 2. BUILD HIGHCHARTS GENDER
+                Highcharts.chart('chart-gender', {
+                    chart: { type: 'pie', style:{ fontFamily:'sans-serif' } },
+                    title: { text: 'Data ASN Kota Dumai' },
+                    subtitle: { text: 'Berdasarkan Jenis Kelamin' },
+                    credits: { enabled: false },
+                    plotOptions: {
+                        pie: { allowPointSelect: true, cursor: 'pointer', dataLabels: { enabled: true, format: '<b>{point.name}</b> <br/> {point.y:,.0f}' }, showInLegend: true }
+                    },
+                    series: [{
+                        colorByPoint: true,
+                        data: [
+                            { name: "Laki-laki", y: (db['gender_l'] || 0), color: "#28a745" },
+                            { name: "Perempuan", y: (db['gender_p'] || 0), color: "#fd7e14" }
+                        ]
+                    }]
                 });
 
-                new Chart(document.getElementById('jabatanChart').getContext('2d'), {
-                    type: 'bar',
-                    data: { labels: ['Struktural', 'Pelaksana', 'Fungsional'], datasets: [{ label: 'Jumlah', data: [db['jab_struktural'] || 0, db['jab_pelaksana'] || 0, db['jab_fungsional'] || 0], backgroundColor: '#fbbc05' }] },
-                    options: { maintainAspectRatio: false, scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }, plugins: { legend: { display: false } } }
+                // 3. BUILD HIGHCHARTS ASN
+                Highcharts.chart('chart-asn', {
+                    chart: { style: { fontFamily: 'sans-serif' } },
+                    title: { text: 'Data ASN Kota Dumai' },
+                    subtitle: { text: 'Berdasarkan Jenis Pegawai' },
+                    credits: { enabled: false },
+                    xAxis: { categories: ['CPNS', 'PNS', 'PPPK', 'PPPK PW'] },
+                    yAxis: { title: { text: 'Jumlah Pegawai' } },
+                    series: [{
+                        type: 'column', name: 'Total Pegawai', color: '#007bff',
+                        dataLabels: { enabled: true, format: '{point.y:,.0f}' },
+                        data: [cpns, pns, pppk, pppkw]
+                    }]
                 });
 
-                new Chart(document.getElementById('pensiunChart').getContext('2d'), {
-                    type: 'line',
-                    data: { labels: ['2026', '2027', '2028'], datasets: [{ label: 'Pegawai Pensiun', data: [pen26, pen27, pen28], borderColor: '#ea4335', backgroundColor: '#ea4335', tension: 0.1 }] },
-                    options: { maintainAspectRatio: false, scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }, plugins: { legend: { display: false } } }
+                // 4. BUILD HIGHCHARTS JABATAN
+                Highcharts.chart('chart-jabatan', {
+                    chart: { style: { fontFamily: 'sans-serif' } },
+                    title: { text: 'Data ASN Kota Dumai' },
+                    subtitle: { text: 'Berdasarkan Jenis Jabatan' },
+                    credits: { enabled: false },
+                    xAxis: { categories: ['Struktural', 'Pelaksana', 'Fungsional'] },
+                    yAxis: { title: { text: 'Jumlah Pegawai' } },
+                    series: [{
+                        type: 'column', name: 'Total Pegawai', color: '#ffc107',
+                        dataLabels: { enabled: true, format: '{point.y:,.0f}' },
+                        data: [(db['jab_struktural'] || 0), (db['jab_pelaksana'] || 0), (db['jab_fungsional'] || 0)]
+                    }]
                 });
 
             } catch (error) { 
-                console.error('Error:', error); 
-                document.getElementById('teks_total_semua').innerText = "❌ ERROR: Cek Link!";
+                console.error(error); 
+                document.getElementById('header_total').innerText = "ERROR CSV";
             }
         }
-        
-        ambilData();
+
+        // Jalankan fungsi
+        if(sheetUrl !== 'LINK_CSV_ANDA_DI_SINI') { initDashboard(); }
     </script>
 </body>
 </html>
