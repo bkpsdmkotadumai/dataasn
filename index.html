@@ -83,7 +83,7 @@
 
     <script>
         // ---> MASUKKAN LINK CSV GOOGLE SHEETS "TOTAL" ANDA DI BAWAH INI <---
-        const sheetUrl = 'LINK_CSV_ANDA_DI_SINI'; 
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnK65dhlKpvR5Lx7k8B5-jwfg-d2b97qM-8t7J0hPvEXUma2Y1Cn5VhGH8nykpKswD4pSEIh1Wb4Qf/pub?gid=0&single=true&output=csv'; 
 
         async function ambilData() {
             try {
@@ -92,40 +92,71 @@
                 
                 const rows = dataText.split('\n');
                 let db = {};
+                
+                // Variabel untuk menampung total pensiun dari PNS + PPPK + PPPK PW
+                let pen26 = 0, pen27 = 0, pen28 = 0;
+
+                // Mencari posisi kolom tahun 2026, 2027, 2028 secara otomatis dari baris pertama (header)
+                let headers = rows[0].split(',');
+                let idx26 = headers.findIndex(x => x.includes('2026'));
+                let idx27 = headers.findIndex(x => x.includes('2027'));
+                let idx28 = headers.findIndex(x => x.includes('2028'));
+                // Jika tidak ketemu di header, kita set manual ke kolom H(7), I(8), J(9)
+                if(idx26 === -1) idx26 = 7; 
+                if(idx27 === -1) idx27 = 8;
+                if(idx28 === -1) idx28 = 9;
+
                 for(let i = 1; i < rows.length; i++) {
-                    const row = rows[i].split(',');
-                    if(row.length > 1) {
-                        db[row[0].trim()] = parseInt(row[1].trim()) || 0;
+                    const cols = rows[i].split(',');
+                    
+                    // 1. Membaca data Kolom A, dan MENJUMLAHKAN Kolom B, C, D (Sesuai format Excel Anda)
+                    if(cols[0]) {
+                        let key = cols[0].trim().toLowerCase();
+                        // (parseInt) mengubah teks jadi angka. Jika kosong diisi 0.
+                        let val = (parseInt(cols[1]) || 0) + (parseInt(cols[2]) || 0) + (parseInt(cols[3]) || 0);
+                        db[key] = val;
+                    }
+
+                    // 2. Membaca tabel Pensiun di Kolom F (index 5)
+                    if(cols[5]) {
+                        let textF = cols[5].trim().toLowerCase();
+                        // Jika ada tulisan pns / pppk di kolom F, ambil angka tahunnya
+                        if(textF === 'pns' || textF === 'pppk' || textF === 'pppk paruh waktu') {
+                            pen26 += (parseInt(cols[idx26]) || 0);
+                            pen27 += (parseInt(cols[idx27]) || 0);
+                            pen28 += (parseInt(cols[idx28]) || 0);
+                        }
                     }
                 }
-https://docs.google.com/spreadsheets/d/e/2PACX-1vRnK65dhlKpvR5Lx7k8B5-jwfg-d2b97qM-8t7J0hPvEXUma2Y1Cn5VhGH8nykpKswD4pSEIh1Wb4Qf/pub?gid=0&single=true&output=csv
-                // Update Kartu
-                document.getElementById('teks_pns').innerText = (db.total_pns || 0).toLocaleString('id-ID');
-                document.getElementById('teks_pppk').innerText = (db.total_pppk || 0).toLocaleString('id-ID');
-                document.getElementById('teks_pppk_pw').innerText = (db.total_pppk_pw || 0).toLocaleString('id-ID');
-                document.getElementById('teks_pensiun26').innerText = (db.pensiun_2026 || 0).toLocaleString('id-ID');
+
+                // Update Angka di Kartu Web
+                document.getElementById('teks_pns').innerText = (db['total_pns'] || 0).toLocaleString('id-ID');
+                document.getElementById('teks_pppk').innerText = (db['total_pppk'] || 0).toLocaleString('id-ID');
+                document.getElementById('teks_pppk_pw').innerText = (db['total_pppk_paruh_waktu'] || 0).toLocaleString('id-ID');
+                document.getElementById('teks_pensiun26').innerText = pen26.toLocaleString('id-ID');
                 
-                let totalSemua = (db.total_pns || 0) + (db.total_pppk || 0) + (db.total_pppk_pw || 0);
+                // Menghitung Total Semua Pegawai
+                let totalSemua = (db['total_pns'] || 0) + (db['total_pppk'] || 0) + (db['total_pppk_paruh_waktu'] || 0);
                 document.getElementById('teks_total_semua').innerText = totalSemua.toLocaleString('id-ID');
 
-                // Grafik Gender
+                // Update Grafik Gender (Mengambil total L dan P yang sudah dijumlahkan web)
                 new Chart(document.getElementById('genderChart').getContext('2d'), {
                     type: 'doughnut',
-                    data: { labels: ['Laki-laki', 'Perempuan'], datasets: [{ data: [db.gender_l || 0, db.gender_p || 0], backgroundColor: ['#28a745', '#ff8c00'], borderWidth: 0 }] },
+                    data: { labels: ['Laki-laki', 'Perempuan'], datasets: [{ data: [db['gender_l'] || 0, db['gender_p'] || 0], backgroundColor: ['#28a745', '#ff8c00'], borderWidth: 0 }] },
                     options: { plugins: { legend: { labels: { color: 'white' } } } }
                 });
 
-                // Grafik Jabatan
+                // Update Grafik Jabatan
                 new Chart(document.getElementById('jabatanChart').getContext('2d'), {
                     type: 'bar',
-                    data: { labels: ['Struktural', 'Pelaksana', 'Fungsional'], datasets: [{ label: 'Jumlah', data: [db.jab_struktural || 0, db.jab_pelaksana || 0, db.jab_fungsional || 0], backgroundColor: '#fbbc05' }] },
+                    data: { labels: ['Struktural', 'Pelaksana', 'Fungsional'], datasets: [{ label: 'Jumlah', data: [db['jab_struktural'] || 0, db['jab_pelaksana'] || 0, db['jab_fungsional'] || 0], backgroundColor: '#fbbc05' }] },
                     options: { scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }, plugins: { legend: { display: false } } }
                 });
 
-                // Grafik Pensiun
+                // Update Grafik Pensiun
                 new Chart(document.getElementById('pensiunChart').getContext('2d'), {
                     type: 'line',
-                    data: { labels: ['2026', '2027', '2028'], datasets: [{ label: 'Pegawai Pensiun', data: [db.pensiun_2026 || 0, db.pensiun_2027 || 0, db.pensiun_2028 || 0], borderColor: '#ea4335', backgroundColor: '#ea4335', tension: 0.1 }] },
+                    data: { labels: ['2026', '2027', '2028'], datasets: [{ label: 'Pegawai Pensiun', data: [pen26, pen27, pen28], borderColor: '#ea4335', backgroundColor: '#ea4335', tension: 0.1 }] },
                     options: { scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }, plugins: { legend: { display: false } } }
                 });
 
