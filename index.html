@@ -21,7 +21,7 @@
         /* Penyesuaian Header agar mirip referensi */
         .navbar-title {
             background-color: #ffffff;
-            padding: 10px 20px;
+            padding: 12px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -32,60 +32,86 @@
             gap: 15px;
         }
         .brand-container img {
-            height: 55px;
+            height: 60px;
             width: auto;
-        }
-        .brand-text h3 {
-            margin: 0;
-            font-size: 22px;
-            font-weight: 800;
-            color: #d9534f;
-            letter-spacing: 1px;
         }
         .brand-text h4 {
             margin: 0;
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 20px;
+            font-weight: 800;
             color: #28a745;
+            letter-spacing: 0.5px;
         }
         .brand-text span {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold;
-            color: #333;
-            letter-spacing: 2px;
+            color: #d9534f;
+            letter-spacing: 1.5px;
+        }
+        /* Penyesuaian Menu Navigasi Hijau */
+        .navbar-dark.green {
+            background-color: #28a745 !important;
+            padding: 0 15px;
+        }
+        .navbar-dark.green .nav-link {
+            color: #ffffff !important;
+            font-weight: 600;
+            padding: 12px 15px !important;
+            transition: 0.2s;
+        }
+        .navbar-dark.green .nav-link:hover, .navbar-dark.green .nav-item.active .nav-link {
+            background-color: rgba(0,0,0,0.15);
+            border-radius: 4px;
         }
     </style>
 </head>
 <body class="white-skin">
 
     <header>
-        <!-- Navbar Atas (Logo & Total Pegawai dengan Tanggal) -->
+        <!-- Navbar Atas (Logo Resmi Dumai & Total Pegawai dengan Tanggal) -->
         <nav class="navbar navbar-title">
             <div class="brand-container">
-                <!-- Logo Pemko Dumai Resmi dari Link Publik -->
+                <!-- Logo Resmi Kota Dumai dari Gambar yang Anda Lampirkan -->
                 <img src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Lambang_Kota_Dumai.png" alt="Logo Kota Dumai">
                 <div class="brand-text">
                     <span>D A S H B O A R D</span>
                     <h4>KEPEGAWAIAN</h4>
-                    <span style="color: #000; font-size: 11px;">PEMERINTAH KOTA DUMAI</span>
+                    <span style="color: #333; font-size: 11px;">BKPSDM KOTA DUMAI</span>
                 </div>
             </div>
             <div class="navbar-right text-right">
                 <p class="text-header-amount font-weight-bold mb-0" style="font-size: 13px; color: #333;">Total Pegawai Tahun 2026</p>
                 <h2 class="text-amount total-asn mb-0" id="header_total" style="color: #d9534f; font-weight: 800;">Loading...</h2>
-                <!-- Tanggal Otomatis Hari Ini -->
+                <!-- Tanggal Otomatis Tepat di Bawah Jumlah Pegawai -->
                 <p class="last-update mb-0" id="current-date" style="font-size: 12px; color: #666; font-weight: bold;"></p>
             </div>
         </nav>
 
-        <!-- Navbar Menu Hijau -->
+        <!-- Navbar Menu Navigasi Lengkap -->
         <nav class="navbar navbar-expand-lg navbar-dark green">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="basicExampleNav">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active"><a class="nav-link" href="#"><span><i class="fas fa-home"></i> Dashboard</span></a></li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="index.html"><span><i class="fas fa-home"></i> Dashboard</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pangkat.html"><span><i class="fas fa-chart-bar"></i> Berdasarkan Pangkat</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="eselon.html"><span><i class="fas fa-chart-line"></i> Berdasarkan Eselon</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="umur.html"><span><i class="fas fa-chart-pie"></i> Berdasarkan Umur</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pendidikan.html"><span><i class="fas fa-university"></i> Berdasarkan Pendidikan</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pensiun.html"><span><i class="fas fa-user-tie"></i> Berdasarkan Pensiun</span></a>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -96,7 +122,6 @@
             <!-- 4 KARTU ATAS -->
             <section class="mb-3 mt-n4">
                 <div class="row">
-                    <!-- Card PNS -->
                     <div class="col-xl-3 col-md-6 col-12 mt-3">
                         <div class="card card-cascade cascading-admin-card primary-color">
                             <div class="admin-up">
@@ -109,7 +134,6 @@
                             <div class="card-body card-body-cascade"><div class="progress mb-2"><div class="progress-bar white" style="width: 100%"></div></div></div>
                         </div>
                     </div>
-                    <!-- Card CPNS -->
                     <div class="col-xl-3 col-md-6 col-12 mt-3">
                         <div class="card card-cascade cascading-admin-card warning-color">
                             <div class="admin-up">
@@ -122,7 +146,6 @@
                             <div class="card-body card-body-cascade"><div class="progress mb-2"><div class="progress-bar white accent-2" style="width: 100%"></div></div></div>
                         </div>
                     </div>
-                    <!-- Card PPPK -->
                     <div class="col-xl-3 col-md-6 col-12 mt-3">
                         <div class="card card-cascade cascading-admin-card green">
                             <div class="admin-up">
@@ -135,7 +158,6 @@
                             <div class="card-body card-body-cascade"><div class="progress mb-2"><div class="progress-bar white accent-2" style="width: 100%"></div></div></div>
                         </div>
                     </div>
-                    <!-- Card PPPK PW -->
                     <div class="col-xl-3 col-md-6 col-12 mt-3">
                         <div class="card card-cascade cascading-admin-card danger-color">
                             <div class="admin-up">
@@ -211,13 +233,12 @@
 
     <!-- SCRIPT UTAMA -->
     <script>
-        // --- 1. MENAMPILKAN TANGGAL HARI INI OTOMATIS ---
+        // Tanggal Real-Time Otomatis
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         const today = new Date();
         document.getElementById('current-date').innerText = today.toLocaleDateString('id-ID', options);
 
-
-        // --- 2. FITUR PENGAMAN (BLOKIR KLIK KANAN & INSPECT) ---
+        // Fitur Pengaman (Blokir Klik Kanan & Inspect)
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', function(e) {
             if (e.keyCode === 123 || (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67 || e.keyCode === 83))) {
@@ -226,8 +247,7 @@
             }
         });
 
-
-        // --- 3. LINK GOOGLE SHEETS & TARIK DATA ---
+        // Link Google Sheets
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnK65dhlKpvR5Lx7k8B5-jwfg-d2b97qM-8t7J0hPvEXUma2Y1Cn5VhGH8nykpKswD4pSEIh1Wb4Qf/pub?gid=0&single=true&output=csv'; 
 
         async function initDashboard() {
@@ -269,7 +289,6 @@
                     }
                 }
 
-                // Update Kartu Angka
                 let pns = db['total_pns_total'] || 0;
                 let pppk = db['total_pppk_total'] || 0;
                 let pppkw = db['total_pppk_paruh_waktu_total'] || 0;
@@ -284,7 +303,6 @@
                 document.getElementById('tbl_pen27').innerText = pen27 + " Pegawai";
                 document.getElementById('tbl_pen28').innerText = pen28 + " Pegawai";
 
-                // Grafik Donut Gender
                 Highcharts.chart('chart-gender', {
                     chart: { type: 'pie', backgroundColor: '#121212', style: { fontFamily: 'sans-serif', color: '#fff' } },
                     title: { text: 'Data ASN Kota Dumai', style: { color: '#fff', fontWeight: 'bold' } }, 
@@ -311,7 +329,6 @@
                     ]}]
                 });
 
-                // Grafik Combo Jenis Pegawai
                 let pns_l = db['gender_l_pns']||0, pns_p = db['gender_p_pns']||0;
                 let pppk_l = db['gender_l_pppk']||0, pppk_p = db['gender_p_pppk']||0;
                 let pw_l = db['gender_l_pppkw']||0, pw_p = db['gender_p_pppkw']||0;
@@ -339,7 +356,6 @@
                     }]
                 });
 
-                // Grafik Combo Jabatan
                 let struk_pns = db['jab_struktural_pns']||0, struk_non = (db['jab_struktural_pppk']||0) + (db['jab_struktural_pppkw']||0), struk_tot = db['jab_struktural_total']||0;
                 let pelak_pns = db['jab_pelaksana_pns']||0, pelak_non = (db['jab_pelaksana_pppk']||0) + (db['jab_pelaksana_pppkw']||0), pelak_tot = db['jab_pelaksana_total']||0;
                 let fungs_pns = db['jab_fungsional_pns']||0, fungs_non = (db['jab_fungsional_pppk']||0) + (db['jab_fungsional_pppkw']||0), fungs_tot = db['jab_fungsional_total']||0;
