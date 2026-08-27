@@ -8,11 +8,18 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <!-- Bootstrap & Material Design CSS (Sumber Asli) -->
+    <!-- Bootstrap & Material Design CSS -->
     <link href="https://simpeg.sumbarprov.go.id/idashboard/assets/css/themes/bootstrap.css" rel="stylesheet" type="text/css" />
     <link href="https://simpeg.sumbarprov.go.id/idashboard/assets/css/themes/mdb.css" rel="stylesheet" type="text/css" />
     <link href="https://simpeg.sumbarprov.go.id/idashboard/assets/css/themes/style.css" rel="stylesheet" type="text/css" />
     <link href="https://simpeg.sumbarprov.go.id/idashboard/assets/css/plugins/nprogress/nprogress.css" rel="stylesheet" type="text/css" />
+    
+    <style>
+        /* Memastikan latar belakang kotak grafik hitam elegan seperti referensi */
+        .highcharts-background {
+            fill: #121212 !important;
+        }
+    </style>
 </head>
 <body class="white-skin">
 
@@ -105,17 +112,17 @@
                 </div>
             </section>
 
-            <!-- GRAFIK HIGHCHARTS (DIKEMBALIKAN KE VERSI COMBO ASLI) -->
+            <!-- GRAFIK HIGHCHARTS (TAMPILAN GELAP & GARIS BIRU) -->
             <section class="mb-3">
                 <div class="row mt-n3">
                     <div class="col-12 col-sm-6 col-md-4 mt-3">
-                        <div class="card"><div class="card-body"><div id="chart-gender"></div></div></div>
+                        <div class="card"><div class="card-body p-0"><div id="chart-gender"></div></div></div>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 mt-3">
-                        <div class="card px-0 py-0"><div class="card-body"><div id="chart-asn"></div></div></div>
+                        <div class="card px-0 py-0"><div class="card-body p-0"><div id="chart-asn"></div></div></div>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4 mt-3">
-                        <div class="card px-0 py-0"><div class="card-body"><div id="chart-jabatan"></div></div></div>
+                        <div class="card px-0 py-0"><div class="card-body p-0"><div id="chart-jabatan"></div></div></div>
                     </div>
                 </div>
             </section>
@@ -154,7 +161,7 @@
     <!-- Footer -->
     <footer class="page-footer font-small green darken-3">
         <div class="footer-copyright text-center py-3">
-            &copy; 2026 Copyright : BKD Kota Dumai - DASHBOARD KEPEGAWAIAN
+            &copy; 2026 Copyright : BKPSDM Kota Dumai - DASHBOARD KEPEGAWAIAN
         </div>
     </footer>
 
@@ -188,17 +195,15 @@
                     const cols = rows[i].split(',');
                     if(cols[0]) {
                         let key = cols[0].trim().toLowerCase();
-                        // Memisahkan nilai Kolom B, C, dan D agar bisa dipisah di grafik
-                        let valB = parseInt(cols[1]) || 0; // Data PNS
-                        let valC = parseInt(cols[2]) || 0; // Data PPPK
-                        let valD = parseInt(cols[3]) || 0; // Data PPPK PW
+                        let valB = parseInt(cols[1]) || 0; 
+                        let valC = parseInt(cols[2]) || 0; 
+                        let valD = parseInt(cols[3]) || 0; 
                         
                         db[key + '_pns'] = valB;
                         db[key + '_pppk'] = valC;
                         db[key + '_pppkw'] = valD;
                         db[key + '_total'] = valB + valC + valD;
                     }
-                    // Data Pensiun
                     if(cols[5]) {
                         let textF = cols[5].trim().toLowerCase();
                         if(textF === 'pns' || textF === 'pppk' || textF === 'pppk paruh waktu') {
@@ -224,60 +229,84 @@
                 document.getElementById('tbl_pen27').innerText = pen27 + " Pegawai";
                 document.getElementById('tbl_pen28').innerText = pen28 + " Pegawai";
 
-                // 2. GRAFIK PIE CHART GENDER
+                // 2. GRAFIK PIE/DONUT (NILAI DI DALAM & KREDIT BKPSDM KOTA DUMAI)
                 Highcharts.chart('chart-gender', {
-                    chart: { type: 'pie', style:{ fontFamily:'sans-serif' } },
-                    title: { text: 'Data ASN Kota Dumai' }, subtitle: { text: 'Berdasarkan Jenis Kelamin' }, credits: { enabled: false },
-                    plotOptions: { pie: { allowPointSelect: true, cursor: 'pointer', dataLabels: { enabled: true, format: '<b>{point.name}</b> <br/> {point.y:,.0f}' }, showInLegend: true } },
+                    chart: { type: 'pie', backgroundColor: '#121212', style: { fontFamily: 'sans-serif', color: '#fff' } },
+                    title: { text: 'Data ASN Kota Dumai', style: { color: '#fff', fontWeight: 'bold' } }, 
+                    subtitle: { text: 'Berdasarkan Jenis Kelamin', style: { color: '#ccc' } }, 
+                    credits: { enabled: true, text: 'BKPSDM Kota Dumai', style: { color: '#888' } },
+                    plotOptions: { 
+                        pie: { 
+                            innerSize: '45%', /* Membuat lingkaran berlubang di tengah */
+                            allowPointSelect: true, 
+                            cursor: 'pointer', 
+                            dataLabels: { 
+                                enabled: true, 
+                                format: '<b>{point.name}</b><br>{point.y:,.0f}', 
+                                distance: -40, /* Memaksa teks nilai berada di dalam lingkaran */
+                                style: { fontWeight: 'bold', color: 'white', textOutline: 'none' } 
+                            }, 
+                            showInLegend: true 
+                        } 
+                    },
+                    legend: { itemStyle: { color: '#ccc' } },
                     series: [{ colorByPoint: true, data: [
                         { name: "Laki-laki", y: (db['gender_l_total'] || 0), color: "#28a745" },
                         { name: "Perempuan", y: (db['gender_p_total'] || 0), color: "#fd7e14" }
                     ]}]
                 });
 
-                // 3. GRAFIK COMBO CHART - JENIS PEGAWAI (Laki, Perempuan, & Garis Total)
+                // 3. GRAFIK COMBO - JENIS PEGAWAI (GARIS TOTAL DIUBAH JADI BIRU TERANG)
                 let pns_l = db['gender_l_pns']||0, pns_p = db['gender_p_pns']||0;
                 let pppk_l = db['gender_l_pppk']||0, pppk_p = db['gender_p_pppk']||0;
                 let pw_l = db['gender_l_pppkw']||0, pw_p = db['gender_p_pppkw']||0;
 
                 Highcharts.chart('chart-asn', {
-                    chart: { style: { fontFamily: 'sans-serif' } },
-                    title: { text: 'Data ASN Kota Dumai' }, subtitle: { text: 'Berdasarkan Jenis Pegawai' }, credits: { enabled: false },
-                    xAxis: { categories: ['CPNS', 'PNS', 'PPPK', 'PPPK PW'] }, yAxis: { title: { text: 'Jumlah Pegawai' } },
+                    chart: { backgroundColor: '#121212', style: { fontFamily: 'sans-serif' } },
+                    title: { text: 'Data ASN Kota Dumai', style: { color: '#fff', fontWeight: 'bold' } }, 
+                    subtitle: { text: 'Berdasarkan Jenis Pegawai', style: { color: '#ccc' } }, 
+                    credits: { enabled: true, text: 'BKPSDM Kota Dumai', style: { color: '#888' } },
+                    xAxis: { categories: ['CPNS', 'PNS', 'PPPK', 'PPPK PW'], labels: { style: { color: '#fff' } } }, 
+                    yAxis: { title: { text: 'Jumlah Pegawai', style: { color: '#fff' } }, labels: { style: { color: '#fff' } }, gridLineColor: '#333' },
+                    legend: { itemStyle: { color: '#ccc' } },
                     series: [{
                         type: 'column', name: 'Laki-laki', color: '#007bff',
-                        dataLabels: { enabled: true, format: '{point.y:,.0f}' },
+                        dataLabels: { enabled: true, format: '{point.y:,.0f}', style: { color: '#fff', textOutline: 'none' } },
                         data: [0, pns_l, pppk_l, pw_l]
                     }, {
                         type: 'column', name: 'Perempuan', color: '#ffc107',
-                        dataLabels: { enabled: true, format: '{point.y:,.0f}' },
+                        dataLabels: { enabled: true, format: '{point.y:,.0f}', style: { color: '#fff', textOutline: 'none' } },
                         data: [0, pns_p, pppk_p, pw_p]
                     }, {
-                        type: 'spline', name: 'Total', color: '#ff0000',
+                        type: 'spline', name: 'Total', color: '#00d2ff', /* Garis Total diubah jadi Biru Terang */
                         tooltip: { pointFormat: '{series.name}: <b>{point.y:,.0f} pegawai</b>' },
                         data: [{name:'CPNS', y:cpns}, {name:'PNS', y:pns}, {name:'PPPK', y:pppk}, {name:'PPPK PW', y:pppkw}]
                     }]
                 });
 
-                // 4. GRAFIK COMBO CHART - JABATAN (PNS, Non-PNS, & Garis Total)
+                // 4. GRAFIK COMBO - JABATAN (GARIS TOTAL DIUBAH JADI BIRU TERANG)
                 let struk_pns = db['jab_struktural_pns']||0, struk_non = (db['jab_struktural_pppk']||0) + (db['jab_struktural_pppkw']||0), struk_tot = db['jab_struktural_total']||0;
                 let pelak_pns = db['jab_pelaksana_pns']||0, pelak_non = (db['jab_pelaksana_pppk']||0) + (db['jab_pelaksana_pppkw']||0), pelak_tot = db['jab_pelaksana_total']||0;
                 let fungs_pns = db['jab_fungsional_pns']||0, fungs_non = (db['jab_fungsional_pppk']||0) + (db['jab_fungsional_pppkw']||0), fungs_tot = db['jab_fungsional_total']||0;
 
                 Highcharts.chart('chart-jabatan', {
-                    chart: { style: { fontFamily: 'sans-serif' } },
-                    title: { text: 'Data ASN Kota Dumai' }, subtitle: { text: 'Berdasarkan Jenis Jabatan' }, credits: { enabled: false },
-                    xAxis: { categories: ['Struktural', 'Pelaksana', 'Fungsional'] }, yAxis: { title: { text: 'Jumlah Pegawai' } },
+                    chart: { backgroundColor: '#121212', style: { fontFamily: 'sans-serif' } },
+                    title: { text: 'Data ASN Kota Dumai', style: { color: '#fff', fontWeight: 'bold' } }, 
+                    subtitle: { text: 'Berdasarkan Jenis Jabatan', style: { color: '#ccc' } }, 
+                    credits: { enabled: true, text: 'BKPSDM Kota Dumai', style: { color: '#888' } },
+                    xAxis: { categories: ['Struktural', 'Pelaksana', 'Fungsional'], labels: { style: { color: '#fff' } } }, 
+                    yAxis: { title: { text: 'Jumlah Pegawai', style: { color: '#fff' } }, labels: { style: { color: '#fff' } }, gridLineColor: '#333' },
+                    legend: { itemStyle: { color: '#ccc' } },
                     series: [{
                         type: 'column', name: 'PNS', color: '#007bff',
-                        dataLabels: { enabled: true, format: '{point.y:,.0f}' },
+                        dataLabels: { enabled: true, format: '{point.y:,.0f}', style: { color: '#fff', textOutline: 'none' } },
                         data: [struk_pns, pelak_pns, fungs_pns]
                     }, {
                         type: 'column', name: 'PPPK & Paruh Waktu', color: '#ffc107',
-                        dataLabels: { enabled: true, format: '{point.y:,.0f}' },
+                        dataLabels: { enabled: true, format: '{point.y:,.0f}', style: { color: '#fff', textOutline: 'none' } },
                         data: [struk_non, pelak_non, fungs_non]
                     }, {
-                        type: 'spline', name: 'Total', color: '#ff0000',
+                        type: 'spline', name: 'Total', color: '#00d2ff', /* Garis Total diubah jadi Biru Terang */
                         tooltip: { pointFormat: '{series.name}: <b>{point.y:,.0f} pegawai</b>' },
                         data: [{name:'Struktural', y:struk_tot}, {name:'Pelaksana', y:pelak_tot}, {name:'Fungsional', y:fungs_tot}]
                     }]
@@ -289,7 +318,7 @@
             }
         }
 
-        if(sheetUrl !== '') { initDashboard(); }
+        if(sheetUrl !== 'LINK_CSV_ANDA_DI_SINI') { initDashboard(); }
     </script>
 </body>
 </html>
