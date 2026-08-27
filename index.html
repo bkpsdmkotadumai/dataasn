@@ -15,7 +15,6 @@
     <link href="https://simpeg.sumbarprov.go.id/idashboard/assets/css/plugins/nprogress/nprogress.css" rel="stylesheet" type="text/css" />
     
     <style>
-        /* Memastikan latar belakang kotak grafik hitam elegan seperti referensi */
         .highcharts-background {
             fill: #121212 !important;
         }
@@ -112,7 +111,7 @@
                 </div>
             </section>
 
-            <!-- GRAFIK HIGHCHARTS (TAMPILAN GELAP & GARIS BIRU) -->
+            <!-- GRAFIK HIGHCHARTS -->
             <section class="mb-3">
                 <div class="row mt-n3">
                     <div class="col-12 col-sm-6 col-md-4 mt-3">
@@ -170,8 +169,35 @@
     <script type="text/javascript" src="https://simpeg.sumbarprov.go.id/idashboard/assets/js/themes/bootstrap.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
 
-    <!-- SCRIPT TARIK DATA GOOGLE SHEETS -->
+    <!-- SCRIPT PENGAMAN & TARIK DATA GOOGLE SHEETS -->
     <script>
+        // --- FITUR PENGAMAN (MENGHALANGI KLIK KANAN & INSPECT ELEMENT) ---
+        // 1. Mematikan klik kanan mouse
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            alert("Aksi ini dibatasi demi keamanan data kepegawaian.");
+        });
+
+        // 2. Mematikan tombol pintasan (F12, Ctrl+U, Ctrl+Shift+I, dll)
+        document.addEventListener('keydown', function(e) {
+            // F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+U (View Source) atau Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C
+            if (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+S (Save Page)
+            if (e.ctrlKey && e.keyCode === 83) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+
         // ===> MASUKKAN LINK CSV GOOGLE SHEETS ANDA DI BAWAH INI <===
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnK65dhlKpvR5Lx7k8B5-jwfg-d2b97qM-8t7J0hPvEXUma2Y1Cn5VhGH8nykpKswD4pSEIh1Wb4Qf/pub?gid=0&single=true&output=csv'; 
 
@@ -229,7 +255,7 @@
                 document.getElementById('tbl_pen27').innerText = pen27 + " Pegawai";
                 document.getElementById('tbl_pen28').innerText = pen28 + " Pegawai";
 
-                // 2. GRAFIK PIE/DONUT (NILAI DI DALAM & KREDIT BKPSDM KOTA DUMAI)
+                // 2. GRAFIK PIE/DONUT
                 Highcharts.chart('chart-gender', {
                     chart: { type: 'pie', backgroundColor: '#121212', style: { fontFamily: 'sans-serif', color: '#fff' } },
                     title: { text: 'Data ASN Kota Dumai', style: { color: '#fff', fontWeight: 'bold' } }, 
@@ -237,13 +263,13 @@
                     credits: { enabled: true, text: 'BKPSDM Kota Dumai', style: { color: '#888' } },
                     plotOptions: { 
                         pie: { 
-                            innerSize: '45%', /* Membuat lingkaran berlubang di tengah */
+                            innerSize: '45%', 
                             allowPointSelect: true, 
                             cursor: 'pointer', 
                             dataLabels: { 
                                 enabled: true, 
                                 format: '<b>{point.name}</b><br>{point.y:,.0f}', 
-                                distance: -40, /* Memaksa teks nilai berada di dalam lingkaran */
+                                distance: -40, 
                                 style: { fontWeight: 'bold', color: 'white', textOutline: 'none' } 
                             }, 
                             showInLegend: true 
@@ -256,7 +282,7 @@
                     ]}]
                 });
 
-                // 3. GRAFIK COMBO - JENIS PEGAWAI (GARIS TOTAL DIUBAH JADI BIRU TERANG)
+                // 3. GRAFIK COMBO - JENIS PEGAWAI
                 let pns_l = db['gender_l_pns']||0, pns_p = db['gender_p_pns']||0;
                 let pppk_l = db['gender_l_pppk']||0, pppk_p = db['gender_p_pppk']||0;
                 let pw_l = db['gender_l_pppkw']||0, pw_p = db['gender_p_pppkw']||0;
@@ -278,13 +304,13 @@
                         dataLabels: { enabled: true, format: '{point.y:,.0f}', style: { color: '#fff', textOutline: 'none' } },
                         data: [0, pns_p, pppk_p, pw_p]
                     }, {
-                        type: 'spline', name: 'Total', color: '#00d2ff', /* Garis Total diubah jadi Biru Terang */
+                        type: 'spline', name: 'Total', color: '#00d2ff', 
                         tooltip: { pointFormat: '{series.name}: <b>{point.y:,.0f} pegawai</b>' },
                         data: [{name:'CPNS', y:cpns}, {name:'PNS', y:pns}, {name:'PPPK', y:pppk}, {name:'PPPK PW', y:pppkw}]
                     }]
                 });
 
-                // 4. GRAFIK COMBO - JABATAN (GARIS TOTAL DIUBAH JADI BIRU TERANG)
+                // 4. GRAFIK COMBO - JABATAN
                 let struk_pns = db['jab_struktural_pns']||0, struk_non = (db['jab_struktural_pppk']||0) + (db['jab_struktural_pppkw']||0), struk_tot = db['jab_struktural_total']||0;
                 let pelak_pns = db['jab_pelaksana_pns']||0, pelak_non = (db['jab_pelaksana_pppk']||0) + (db['jab_pelaksana_pppkw']||0), pelak_tot = db['jab_pelaksana_total']||0;
                 let fungs_pns = db['jab_fungsional_pns']||0, fungs_non = (db['jab_fungsional_pppk']||0) + (db['jab_fungsional_pppkw']||0), fungs_tot = db['jab_fungsional_total']||0;
@@ -306,7 +332,7 @@
                         dataLabels: { enabled: true, format: '{point.y:,.0f}', style: { color: '#fff', textOutline: 'none' } },
                         data: [struk_non, pelak_non, fungs_non]
                     }, {
-                        type: 'spline', name: 'Total', color: '#00d2ff', /* Garis Total diubah jadi Biru Terang */
+                        type: 'spline', name: 'Total', color: '#00d2ff', 
                         tooltip: { pointFormat: '{series.name}: <b>{point.y:,.0f} pegawai</b>' },
                         data: [{name:'Struktural', y:struk_tot}, {name:'Pelaksana', y:pelak_tot}, {name:'Fungsional', y:fungs_tot}]
                     }]
