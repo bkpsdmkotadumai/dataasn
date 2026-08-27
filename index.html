@@ -18,23 +18,63 @@
         .highcharts-background {
             fill: #121212 !important;
         }
+        /* Penyesuaian Header agar mirip referensi */
+        .navbar-title {
+            background-color: #ffffff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .brand-container img {
+            height: 55px;
+            width: auto;
+        }
+        .brand-text h3 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+            color: #d9534f;
+            letter-spacing: 1px;
+        }
+        .brand-text h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #28a745;
+        }
+        .brand-text span {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            letter-spacing: 2px;
+        }
     </style>
 </head>
 <body class="white-skin">
 
     <header>
-        <!-- Navbar Atas -->
+        <!-- Navbar Atas (Logo & Total Pegawai dengan Tanggal) -->
         <nav class="navbar navbar-title">
-            <div class="navbar-left">
-                <a class="navbar-brand" href="#">
-                    <h3 class="font-weight-bold" style="color:#0056b3; margin-top:10px;">
-                        <i class="fas fa-building"></i> BKPSDM KOTA DUMAI
-                    </h3>
-                </a>
+            <div class="brand-container">
+                <!-- Logo Pemko Dumai Resmi dari Link Publik -->
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Lambang_Kota_Dumai.png" alt="Logo Kota Dumai">
+                <div class="brand-text">
+                    <span>D A S H B O A R D</span>
+                    <h4>KEPEGAWAIAN</h4>
+                    <span style="color: #000; font-size: 11px;">PEMERINTAH KOTA DUMAI</span>
+                </div>
             </div>
-            <div class="navbar-right">
-                <p class="text-header-amount font-weight-bold">Total Pegawai Tahun 2026</p>
-                <h2 class="text-amount total-asn" id="header_total">Loading...</h2>
+            <div class="navbar-right text-right">
+                <p class="text-header-amount font-weight-bold mb-0" style="font-size: 13px; color: #333;">Total Pegawai Tahun 2026</p>
+                <h2 class="text-amount total-asn mb-0" id="header_total" style="color: #d9534f; font-weight: 800;">Loading...</h2>
+                <!-- Tanggal Otomatis Hari Ini -->
+                <p class="last-update mb-0" id="current-date" style="font-size: 12px; color: #666; font-weight: bold;"></p>
             </div>
         </nav>
 
@@ -169,36 +209,25 @@
     <script type="text/javascript" src="https://simpeg.sumbarprov.go.id/idashboard/assets/js/themes/bootstrap.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
 
-    <!-- SCRIPT PENGAMAN & TARIK DATA GOOGLE SHEETS -->
+    <!-- SCRIPT UTAMA -->
     <script>
-        // --- FITUR PENGAMAN (MENGHALANGI KLIK KANAN & INSPECT ELEMENT) ---
-        // 1. Mematikan klik kanan mouse
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            alert("Aksi ini dibatasi demi keamanan data kepegawaian.");
-        });
+        // --- 1. MENAMPILKAN TANGGAL HARI INI OTOMATIS ---
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const today = new Date();
+        document.getElementById('current-date').innerText = today.toLocaleDateString('id-ID', options);
 
-        // 2. Mematikan tombol pintasan (F12, Ctrl+U, Ctrl+Shift+I, dll)
+
+        // --- 2. FITUR PENGAMAN (BLOKIR KLIK KANAN & INSPECT) ---
+        document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', function(e) {
-            // F12
-            if (e.keyCode === 123) {
-                e.preventDefault();
-                return false;
-            }
-            // Ctrl+U (View Source) atau Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C
-            if (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
-                e.preventDefault();
-                return false;
-            }
-            // Ctrl+S (Save Page)
-            if (e.ctrlKey && e.keyCode === 83) {
+            if (e.keyCode === 123 || (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67 || e.keyCode === 83))) {
                 e.preventDefault();
                 return false;
             }
         });
 
 
-        // ===> MASUKKAN LINK CSV GOOGLE SHEETS ANDA DI BAWAH INI <===
+        // --- 3. LINK GOOGLE SHEETS & TARIK DATA ---
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnK65dhlKpvR5Lx7k8B5-jwfg-d2b97qM-8t7J0hPvEXUma2Y1Cn5VhGH8nykpKswD4pSEIh1Wb4Qf/pub?gid=0&single=true&output=csv'; 
 
         async function initDashboard() {
@@ -240,7 +269,7 @@
                     }
                 }
 
-                // 1. UPDATE KARTU ANGKA ATAS
+                // Update Kartu Angka
                 let pns = db['total_pns_total'] || 0;
                 let pppk = db['total_pppk_total'] || 0;
                 let pppkw = db['total_pppk_paruh_waktu_total'] || 0;
@@ -255,7 +284,7 @@
                 document.getElementById('tbl_pen27').innerText = pen27 + " Pegawai";
                 document.getElementById('tbl_pen28').innerText = pen28 + " Pegawai";
 
-                // 2. GRAFIK PIE/DONUT
+                // Grafik Donut Gender
                 Highcharts.chart('chart-gender', {
                     chart: { type: 'pie', backgroundColor: '#121212', style: { fontFamily: 'sans-serif', color: '#fff' } },
                     title: { text: 'Data ASN Kota Dumai', style: { color: '#fff', fontWeight: 'bold' } }, 
@@ -282,7 +311,7 @@
                     ]}]
                 });
 
-                // 3. GRAFIK COMBO - JENIS PEGAWAI
+                // Grafik Combo Jenis Pegawai
                 let pns_l = db['gender_l_pns']||0, pns_p = db['gender_p_pns']||0;
                 let pppk_l = db['gender_l_pppk']||0, pppk_p = db['gender_p_pppk']||0;
                 let pw_l = db['gender_l_pppkw']||0, pw_p = db['gender_p_pppkw']||0;
@@ -310,7 +339,7 @@
                     }]
                 });
 
-                // 4. GRAFIK COMBO - JABATAN
+                // Grafik Combo Jabatan
                 let struk_pns = db['jab_struktural_pns']||0, struk_non = (db['jab_struktural_pppk']||0) + (db['jab_struktural_pppkw']||0), struk_tot = db['jab_struktural_total']||0;
                 let pelak_pns = db['jab_pelaksana_pns']||0, pelak_non = (db['jab_pelaksana_pppk']||0) + (db['jab_pelaksana_pppkw']||0), pelak_tot = db['jab_pelaksana_total']||0;
                 let fungs_pns = db['jab_fungsional_pns']||0, fungs_non = (db['jab_fungsional_pppk']||0) + (db['jab_fungsional_pppkw']||0), fungs_tot = db['jab_fungsional_total']||0;
