@@ -26,6 +26,13 @@
         .charts-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .chart-box { background-color: #1e1e1e; padding: 20px; border-radius: 8px; color: white; text-align: center; }
         .chart-box h4 { margin-top: 0; color: #ffffff; margin-bottom: 15px; }
+        
+        /* INI KODE TAMBAHAN UNTUK MENGUNCI UKURAN GRAFIK */
+        .chart-wrapper {
+            position: relative;
+            height: 300px; /* Tinggi maksimal grafik dikunci disini */
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -64,43 +71,39 @@
             </div>
         </div>
 
-        <!-- Area Grafik -->
+        <!-- Area Grafik dengan Wrapper Baru -->
         <div class="charts-container">
             <div class="chart-box">
                 <h4>Berdasarkan Jenis Kelamin</h4>
-                <canvas id="genderChart"></canvas>
+                <div class="chart-wrapper">
+                    <canvas id="genderChart"></canvas>
+                </div>
             </div>
             <div class="chart-box">
                 <h4>Berdasarkan Jenis Jabatan</h4>
-                <canvas id="jabatanChart"></canvas>
+                <div class="chart-wrapper">
+                    <canvas id="jabatanChart"></canvas>
+                </div>
             </div>
             <div class="chart-box">
                 <h4>Proyeksi Pensiun (3 Tahun)</h4>
-                <canvas id="pensiunChart"></canvas>
+                <div class="chart-wrapper">
+                    <canvas id="pensiunChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Link Anda sudah terpasang di bawah ini
+        // ---> MASUKKAN LINK CSV GOOGLE SHEETS "TOTAL" ANDA DI BAWAH INI <---
         const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnK65dhlKpvR5Lx7k8B5-jwfg-d2b97qM-8t7J0hPvEXUma2Y1Cn5VhGH8nykpKswD4pSEIh1Wb4Qf/pub?gid=0&single=true&output=csv'; 
 
         async function ambilData() {
             try {
                 const response = await fetch(sheetUrl);
+                if (!response.ok) throw new Error("Akses ditolak");
                 
-                // Cek jika Google Sheets menolak akses
-                if (!response.ok) {
-                    throw new Error("Akses ditolak atau link tidak valid");
-                }
-
                 const dataText = await response.text();
-                
-                // Cek jika yang ditarik adalah halaman error HTML, bukan CSV
-                if (dataText.toLowerCase().includes('<!doctype html>')) {
-                    throw new Error("File belum dipublikasikan dengan benar ke format CSV");
-                }
-                
                 const rows = dataText.split('\n');
                 let db = {};
                 let pen26 = 0, pen27 = 0, pen28 = 0;
@@ -141,28 +144,28 @@
                 let totalSemua = (db['total_pns'] || 0) + (db['total_pppk'] || 0) + (db['total_pppk_paruh_waktu'] || 0);
                 document.getElementById('teks_total_semua').innerText = totalSemua.toLocaleString('id-ID');
 
+                // KODE TAMBAHAN: maintainAspectRatio: false agar grafik tidak membesar sendiri
                 new Chart(document.getElementById('genderChart').getContext('2d'), {
                     type: 'doughnut',
                     data: { labels: ['Laki-laki', 'Perempuan'], datasets: [{ data: [db['gender_l'] || 0, db['gender_p'] || 0], backgroundColor: ['#28a745', '#ff8c00'], borderWidth: 0 }] },
-                    options: { plugins: { legend: { labels: { color: 'white' } } } }
+                    options: { maintainAspectRatio: false, plugins: { legend: { labels: { color: 'white' } } } }
                 });
 
                 new Chart(document.getElementById('jabatanChart').getContext('2d'), {
                     type: 'bar',
                     data: { labels: ['Struktural', 'Pelaksana', 'Fungsional'], datasets: [{ label: 'Jumlah', data: [db['jab_struktural'] || 0, db['jab_pelaksana'] || 0, db['jab_fungsional'] || 0], backgroundColor: '#fbbc05' }] },
-                    options: { scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }, plugins: { legend: { display: false } } }
+                    options: { maintainAspectRatio: false, scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }, plugins: { legend: { display: false } } }
                 });
 
                 new Chart(document.getElementById('pensiunChart').getContext('2d'), {
                     type: 'line',
                     data: { labels: ['2026', '2027', '2028'], datasets: [{ label: 'Pegawai Pensiun', data: [pen26, pen27, pen28], borderColor: '#ea4335', backgroundColor: '#ea4335', tension: 0.1 }] },
-                    options: { scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }, plugins: { legend: { display: false } } }
+                    options: { maintainAspectRatio: false, scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }, plugins: { legend: { display: false } } }
                 });
 
             } catch (error) { 
                 console.error('Error:', error); 
                 document.getElementById('teks_total_semua').innerText = "❌ ERROR: Cek Link!";
-                alert("Gagal membaca Google Sheets. Kemungkinan salah sheet atau belum di-publikasikan.");
             }
         }
         
