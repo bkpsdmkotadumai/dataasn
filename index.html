@@ -4,18 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Kepegawaian Kota Dumai</title>
-    <!-- Memanggil Chart.js untuk Grafik -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; }
-        .header { background-color: #ffffff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #28a745; }
-        .header h1 { margin: 0; color: #28a745; font-size: 24px; }
+        .header { background-color: #ffffff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #0056b3; }
+        .header h1 { margin: 0; color: #0056b3; font-size: 24px; }
         .header .total-asn { text-align: right; }
         .header .total-asn h2 { margin: 0; color: #dc3545; font-size: 28px; }
-        .nav { background-color: #28a745; padding: 10px 30px; color: white; display: flex; gap: 20px; font-weight: bold; font-size: 14px; }
+        .nav { background-color: #0056b3; padding: 10px 30px; color: white; display: flex; gap: 20px; font-weight: bold; font-size: 14px; }
         .container { padding: 20px 30px; }
         
-        /* Kartu Ringkasan */
         .summary-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
         .card { padding: 20px; border-radius: 8px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .card h3 { margin: 0; font-size: 16px; font-weight: normal; }
@@ -25,10 +23,9 @@
         .bg-green { background-color: #34a853; }
         .bg-red { background-color: #ea4335; }
 
-        /* Grafik */
-        .charts-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .charts-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .chart-box { background-color: #1e1e1e; padding: 20px; border-radius: 8px; color: white; text-align: center; }
-        .chart-box h4 { margin-top: 0; color: #ffffff; }
+        .chart-box h4 { margin-top: 0; color: #ffffff; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -40,76 +37,101 @@
         </div>
         <div class="total-asn">
             <span style="color: #666; font-size: 14px; font-weight: bold;">Total Pegawai Tahun 2026</span>
-            <h2>4.520</h2>
+            <h2 id="teks_total_semua">Loading...</h2>
         </div>
     </div>
 
     <div class="nav">
         <span>🏠 Dashboard</span>
-        <span>📊 Berdasarkan Pangkat</span>
-        <span>📈 Berdasarkan Pendidikan</span>
+        <span>📊 Data Pegawai</span>
+        <span>📈 Proyeksi Pensiun</span>
     </div>
 
     <div class="container">
         <!-- Kartu Ringkasan -->
         <div class="summary-cards">
             <div class="card bg-blue">
-                <div><h3>Total PNS</h3><h2>3.150</h2></div>
+                <div><h3>Total PNS</h3><h2 id="teks_pns">-</h2></div>
             </div>
             <div class="card bg-yellow">
-                <div><h3>Total CPNS</h3><h2>120</h2></div>
+                <div><h3>Total PPPK</h3><h2 id="teks_pppk">-</h2></div>
             </div>
             <div class="card bg-green">
-                <div><h3>Total PPPK</h3><h2>1.250</h2></div>
+                <div><h3>PPPK Paruh Waktu</h3><h2 id="teks_pppk_pw">-</h2></div>
             </div>
             <div class="card bg-red">
-                <div><h3>Total Honorer</h3><h2>0</h2></div>
+                <div><h3>Pensiun 2026</h3><h2 id="teks_pensiun26">-</h2></div>
             </div>
         </div>
 
         <!-- Area Grafik -->
         <div class="charts-container">
             <div class="chart-box">
-                <h4>Data ASN Berdasarkan Jenis Kelamin</h4>
+                <h4>Berdasarkan Jenis Kelamin</h4>
                 <canvas id="genderChart"></canvas>
             </div>
             <div class="chart-box">
-                <h4>Data Berdasarkan Jenis Jabatan</h4>
+                <h4>Berdasarkan Jenis Jabatan</h4>
                 <canvas id="jabatanChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h4>Proyeksi Pensiun (3 Tahun)</h4>
+                <canvas id="pensiunChart"></canvas>
             </div>
         </div>
     </div>
 
     <script>
-        // Grafik Jenis Kelamin (Donut Chart)
-        const ctxGender = document.getElementById('genderChart').getContext('2d');
-        new Chart(ctxGender, {
-            type: 'doughnut',
-            data: {
-                labels: ['Laki-laki', 'Perempuan'],
-                datasets: [{
-                    data: [2100, 2420],
-                    backgroundColor: ['#28a745', '#ff8c00'],
-                    borderWidth: 0
-                }]
-            },
-            options: { plugins: { legend: { labels: { color: 'white' } } } }
-        });
+        // ---> MASUKKAN LINK CSV GOOGLE SHEETS "TOTAL" ANDA DI BAWAH INI <---
+        const sheetUrl = 'LINK_CSV_ANDA_DI_SINI'; 
 
-        // Grafik Jenis Jabatan (Bar Chart)
-        const ctxJabatan = document.getElementById('jabatanChart').getContext('2d');
-        new Chart(ctxJabatan, {
-            type: 'bar',
-            data: {
-                labels: ['Struktural', 'Pelaksana', 'Fungsional'],
-                datasets: [{
-                    label: 'Jumlah Pegawai',
-                    data: [350, 1500, 2670],
-                    backgroundColor: '#fbbc05'
-                }]
-            },
-            options: { scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }, plugins: { legend: { display: false } } }
-        });
+        async function ambilData() {
+            try {
+                const response = await fetch(sheetUrl);
+                const dataText = await response.text();
+                
+                const rows = dataText.split('\n');
+                let db = {};
+                for(let i = 1; i < rows.length; i++) {
+                    const row = rows[i].split(',');
+                    if(row.length > 1) {
+                        db[row[0].trim()] = parseInt(row[1].trim()) || 0;
+                    }
+                }
+https://docs.google.com/spreadsheets/d/e/2PACX-1vRnK65dhlKpvR5Lx7k8B5-jwfg-d2b97qM-8t7J0hPvEXUma2Y1Cn5VhGH8nykpKswD4pSEIh1Wb4Qf/pub?gid=0&single=true&output=csv
+                // Update Kartu
+                document.getElementById('teks_pns').innerText = (db.total_pns || 0).toLocaleString('id-ID');
+                document.getElementById('teks_pppk').innerText = (db.total_pppk || 0).toLocaleString('id-ID');
+                document.getElementById('teks_pppk_pw').innerText = (db.total_pppk_pw || 0).toLocaleString('id-ID');
+                document.getElementById('teks_pensiun26').innerText = (db.pensiun_2026 || 0).toLocaleString('id-ID');
+                
+                let totalSemua = (db.total_pns || 0) + (db.total_pppk || 0) + (db.total_pppk_pw || 0);
+                document.getElementById('teks_total_semua').innerText = totalSemua.toLocaleString('id-ID');
+
+                // Grafik Gender
+                new Chart(document.getElementById('genderChart').getContext('2d'), {
+                    type: 'doughnut',
+                    data: { labels: ['Laki-laki', 'Perempuan'], datasets: [{ data: [db.gender_l || 0, db.gender_p || 0], backgroundColor: ['#28a745', '#ff8c00'], borderWidth: 0 }] },
+                    options: { plugins: { legend: { labels: { color: 'white' } } } }
+                });
+
+                // Grafik Jabatan
+                new Chart(document.getElementById('jabatanChart').getContext('2d'), {
+                    type: 'bar',
+                    data: { labels: ['Struktural', 'Pelaksana', 'Fungsional'], datasets: [{ label: 'Jumlah', data: [db.jab_struktural || 0, db.jab_pelaksana || 0, db.jab_fungsional || 0], backgroundColor: '#fbbc05' }] },
+                    options: { scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }, plugins: { legend: { display: false } } }
+                });
+
+                // Grafik Pensiun
+                new Chart(document.getElementById('pensiunChart').getContext('2d'), {
+                    type: 'line',
+                    data: { labels: ['2026', '2027', '2028'], datasets: [{ label: 'Pegawai Pensiun', data: [db.pensiun_2026 || 0, db.pensiun_2027 || 0, db.pensiun_2028 || 0], borderColor: '#ea4335', backgroundColor: '#ea4335', tension: 0.1 }] },
+                    options: { scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }, plugins: { legend: { display: false } } }
+                });
+
+            } catch (error) { console.error('Error:', error); }
+        }
+        if(sheetUrl !== 'LINK_CSV_ANDA_DI_SINI') { ambilData(); }
     </script>
 </body>
 </html>
